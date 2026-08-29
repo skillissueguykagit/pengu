@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public class Hitbox : MonoBehaviour
 {
     [SerializeField] private int damage = 25;
+    [SerializeField] private GameObject owner;
 
     private HashSet<Hurtbox> hitTargets = new HashSet<Hurtbox>();
 
@@ -35,6 +36,10 @@ public class Hitbox : MonoBehaviour
         Hurtbox hurtbox = other.GetComponent<Hurtbox>();
 
         if (hurtbox == null)
+            return;
+
+        if (owner != null &&
+            hurtbox.transform.root.gameObject == owner)
             return;
 
         if (hitTargets.Contains(hurtbox))
