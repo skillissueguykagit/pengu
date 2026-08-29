@@ -1430,11 +1430,14 @@ MonoBehaviour:
   lowJumpMultiplier: 2
   coyoteTime: 0.2
   jumpBufferTime: 0.1
-  groundCheck: {fileID: 307101778}
-  groundCheckRadius: 0.05
+  groundCheckDistance: 0.1
+  wallCheckDistance: 0.1
+  groundCheckWidth: 0.8
+  wallCheckHeight: 0.8
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
+  wallSlideSpeed: 2.5
 --- !u!1 &1238463336
 GameObject:
   m_ObjectHideFlags: 0
