@@ -1424,7 +1424,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 52d11db577f5a4780b774a3038c2fbd9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
-  moveSpeed: 4
+  moveSpeed: 5
   jumpForce: 13
   fallMultiplier: 2.5
   lowJumpMultiplier: 2
@@ -1438,6 +1438,9 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   wallSlideSpeed: 2.5
+  wallJumpForce: 13
+  wallJumpHorizontalForce: 10
+  wallJumpLockTime: 0.15
 --- !u!1 &1238463336
 GameObject:
   m_ObjectHideFlags: 0

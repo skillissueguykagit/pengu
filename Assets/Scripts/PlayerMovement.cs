@@ -23,6 +23,9 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Wall")]
     [SerializeField] private float wallSlideSpeed = 2f;
+    [SerializeField] private float wallJumpForce = 6f;
+    [SerializeField] private float wallJumpHorizontalForce = 5f;
+    [SerializeField] private float wallJumpLockTime = 0.15f;
 
     private Rigidbody2D rb;
     private Collider2D playerCollider;
@@ -41,6 +44,8 @@ public class PlayerMovement : MonoBehaviour
     private float coyoteTimeCounter;
     private float jumpBufferCounter;
 
+    private float wallJumpLockCounter;
+
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -54,6 +59,11 @@ public class PlayerMovement : MonoBehaviour
         HandleCoyoteTime();
         HandleJump();
         HandleWallSlide();
+
+        if (wallJumpLockCounter > 0)
+        {
+            wallJumpLockCounter -= Time.deltaTime;
+        }
     }
 
     private void FixedUpdate()
@@ -103,17 +113,37 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleJump()
     {
-        if (jumpBufferCounter > 0 && coyoteTimeCounter > 0)
+        if (jumpBufferCounter <= 0)
+            return;
+
+        // Normal jump
+        if (coyoteTimeCounter > 0)
         {
             Jump();
 
             jumpBufferCounter = 0;
             coyoteTimeCounter = 0;
+
+            return;
+        }
+
+        // Wall jump
+        if (isTouchingWall &&
+            !isGrounded &&
+            wallJumpLockCounter <= 0)
+        {
+            WallJump();
+
+            jumpBufferCounter = 0;
         }
     }
 
     private void HandleMovement()
     {
+        // Don't overwrite the horizontal force from a wall jump
+        if (wallJumpLockCounter > 0)
+            return;
+
         rb.linearVelocity = new Vector2(
             xInput * moveSpeed,
             rb.linearVelocityY
@@ -146,6 +176,28 @@ public class PlayerMovement : MonoBehaviour
         );
     }
 
+    private void WallJump()
+    {
+        // Direction away from the wall
+        float jumpDirection = -wallDirection;
+
+        /*
+         * If the player is pressing toward the wall,
+         * force the jump away from the wall.
+         *
+         * If the player is pressing away from the wall,
+         * also allow the jump away from the wall.
+         *
+         * Basically: wall jump ALWAYS pushes away.
+         */
+        rb.linearVelocity = new Vector2(
+            jumpDirection * wallJumpHorizontalForce,
+            wallJumpForce
+        );
+
+        wallJumpLockCounter = wallJumpLockTime;
+    }
+
     private void HandleWallSlide()
     {
         if (isTouchingWall &&
@@ -172,8 +224,7 @@ public class PlayerMovement : MonoBehaviour
     {
         Bounds bounds = playerCollider.bounds;
 
-        // Ground Check
-
+        // Ground check
         Vector2 groundOrigin = new Vector2(
             bounds.center.x,
             bounds.min.y
@@ -195,8 +246,7 @@ public class PlayerMovement : MonoBehaviour
 
         isGrounded = groundHit.collider != null;
 
-        // Right Wall Check
-
+        // Right wall check
         Vector2 rightWallOrigin = new Vector2(
             bounds.max.x,
             bounds.center.y
@@ -216,9 +266,7 @@ public class PlayerMovement : MonoBehaviour
             groundLayer
         );
 
-
-        // Left Wall Check
-
+        // Left wall check
         Vector2 leftWallOrigin = new Vector2(
             bounds.min.x,
             bounds.center.y
@@ -233,11 +281,7 @@ public class PlayerMovement : MonoBehaviour
             groundLayer
         );
 
-
-        // -------------------------
-        // Wall Result
-        // -------------------------
-
+        // Wall result
         if (rightWallHit.collider != null)
         {
             isTouchingWall = true;
@@ -286,7 +330,6 @@ public class PlayerMovement : MonoBehaviour
             groundOrigin + Vector3.down * groundCheckDistance,
             groundSize
         );
-
 
         // Wall checks
         Gizmos.color = Color.blue;
