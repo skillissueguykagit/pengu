@@ -140,7 +140,6 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleMovement()
     {
-        // Don't overwrite the horizontal force from a wall jump
         if (wallJumpLockCounter > 0)
             return;
 
@@ -181,15 +180,6 @@ public class PlayerMovement : MonoBehaviour
         // Direction away from the wall
         float jumpDirection = -wallDirection;
 
-        /*
-         * If the player is pressing toward the wall,
-         * force the jump away from the wall.
-         *
-         * If the player is pressing away from the wall,
-         * also allow the jump away from the wall.
-         *
-         * Basically: wall jump ALWAYS pushes away.
-         */
         rb.linearVelocity = new Vector2(
             jumpDirection * wallJumpHorizontalForce,
             wallJumpForce
