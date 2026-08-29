@@ -9,28 +9,65 @@ public class CameraFollow : MonoBehaviour
     [SerializeField] private float horizontalDeadZone = 2f;
     [SerializeField] private float verticalDeadZone = 1f;
 
+    [Header("Look Ahead")]
+    [SerializeField] private float lookAheadDistance = 2f;
+    [SerializeField] private float lookAheadSmoothTime = 0.2f;
+
     private Vector3 velocity = Vector3.zero;
+    private float currentLookAhead;
+    private float lookAheadVelocity;
+    private float lastPlayerX;
+
+    private void Start()
+    {
+        lastPlayerX = player.position.x;
+    }
 
     private void LateUpdate()
     {
         Vector3 cameraPosition = transform.position;
         Vector3 playerPosition = player.position;
 
-        float horizontalDifference = playerPosition.x - cameraPosition.x;
-        float verticalDifference = playerPosition.y - cameraPosition.y;
+        float playerMovement = playerPosition.x - lastPlayerX;
 
-        // Dead zone horiz
-        if (Mathf.Abs(horizontalDifference) > horizontalDeadZone)
+        float movementDirection = 0f;
+
+        if (Mathf.Abs(playerMovement) > 0.001f)
         {
-            cameraPosition.x = playerPosition.x -
-                Mathf.Sign(horizontalDifference) * horizontalDeadZone;
+            movementDirection = Mathf.Sign(playerMovement);
         }
 
-        // Dead zone vert
+        float targetLookAhead = movementDirection * lookAheadDistance;
+
+        currentLookAhead = Mathf.SmoothDamp(
+            currentLookAhead,
+            targetLookAhead,
+            ref lookAheadVelocity,
+            lookAheadSmoothTime
+        );
+
+        float targetX = playerPosition.x + currentLookAhead;
+
+        float horizontalDifference =
+            targetX - cameraPosition.x;
+
+        float verticalDifference =
+            playerPosition.y - cameraPosition.y;
+
+        if (Mathf.Abs(horizontalDifference) > horizontalDeadZone)
+        {
+            cameraPosition.x =
+                targetX -
+                Mathf.Sign(horizontalDifference) *
+                horizontalDeadZone;
+        }
+
         if (Mathf.Abs(verticalDifference) > verticalDeadZone)
         {
-            cameraPosition.y = playerPosition.y -
-                Mathf.Sign(verticalDifference) * verticalDeadZone;
+            cameraPosition.y =
+                playerPosition.y -
+                Mathf.Sign(verticalDifference) *
+                verticalDeadZone;
         }
 
         cameraPosition.z = transform.position.z;
@@ -41,5 +78,7 @@ public class CameraFollow : MonoBehaviour
             ref velocity,
             smoothTime
         );
+
+        lastPlayerX = playerPosition.x;
     }
 }
