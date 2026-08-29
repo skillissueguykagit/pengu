@@ -9,6 +9,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float fallMultiplier = 2.5f;
     [SerializeField] private float lowJumpMultiplier = 2f;
 
+    [Header("Jump Timing")]
+    [SerializeField] private float coyoteTime = 0.1f;
+    [SerializeField] private float jumpBufferTime = 0.1f;
+
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck;
     [SerializeField] private float groundCheckRadius = 0.15f;
@@ -17,6 +21,9 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rb;
     private float xInput;
     private bool isGrounded;
+
+    private float coyoteTimeCounter;
+    private float jumpBufferCounter;
 
     void Awake()
     {
@@ -32,6 +39,25 @@ public class PlayerMovement : MonoBehaviour
             groundCheckRadius,
             groundLayer
         );
+
+        // Coyote time
+        if (isGrounded)
+        {
+            coyoteTimeCounter = coyoteTime;
+        }
+        else
+        {
+            coyoteTimeCounter -= Time.deltaTime;
+        }
+
+        // Jump when buffered input meets coyote time
+        if (jumpBufferCounter > 0 && coyoteTimeCounter > 0)
+        {
+            Jump();
+
+            jumpBufferCounter = 0;
+            coyoteTimeCounter = 0;
+        }
     }
 
     private void FixedUpdate()
@@ -44,14 +70,18 @@ public class PlayerMovement : MonoBehaviour
     {
         xInput = Input.GetAxisRaw("Horizontal");
 
-        if ((Input.GetKeyDown(KeyCode.Space) ||
-             Input.GetKeyDown(KeyCode.UpArrow)) &&
-             isGrounded)
+        // Jump buffer
+        if (Input.GetKeyDown(KeyCode.Space) ||
+            Input.GetKeyDown(KeyCode.UpArrow))
         {
-            Jump();
+            jumpBufferCounter = jumpBufferTime;
+        }
+        else
+        {
+            jumpBufferCounter -= Time.deltaTime;
         }
 
-        // shortu jump
+        // Short jump
         if ((Input.GetKeyUp(KeyCode.Space) ||
              Input.GetKeyUp(KeyCode.UpArrow)) &&
              rb.linearVelocityY > 0)
@@ -75,7 +105,6 @@ public class PlayerMovement : MonoBehaviour
     {
         if (rb.linearVelocityY < 0)
         {
-            // fas fas fallin
             rb.linearVelocity += Vector2.up *
                 Physics2D.gravity.y *
                 (fallMultiplier - 1) *
@@ -83,7 +112,6 @@ public class PlayerMovement : MonoBehaviour
         }
         else if (rb.linearVelocityY > 0)
         {
-            // fas fallin
             rb.linearVelocity += Vector2.up *
                 Physics2D.gravity.y *
                 (lowJumpMultiplier - 1) *
