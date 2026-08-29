@@ -4,6 +4,9 @@ public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 4f;
     [SerializeField] private float jumpForce = 5;
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private float groundCheckRadius = 0.2f;
+    [SerializeField] private LayerMask groundLayer;
     private Rigidbody2D rb;
     private float xInput;
     private bool isGrounded;
@@ -16,6 +19,11 @@ public class PlayerMovement : MonoBehaviour
     {
         handleInput();
         handleMovement();
+        isGrounded = Physics2D.OverlapCircle(
+        groundCheck.position,
+        groundCheckRadius,
+        groundLayer
+        );
     }
     
     
@@ -24,7 +32,9 @@ public class PlayerMovement : MonoBehaviour
     {
         xInput = Input.GetAxisRaw("Horizontal");
         if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow)) && isGrounded)
+        {
             Jump();
+        }
     }
     private void handleMovement()
     {
