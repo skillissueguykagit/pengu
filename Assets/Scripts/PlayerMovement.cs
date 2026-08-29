@@ -3,10 +3,11 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 4f;
-    [SerializeField] private float jumpForce = 5;
+    [SerializeField] private float jumpForce = 6f;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private float groundCheckRadius = 0.2f;
     [SerializeField] private LayerMask groundLayer;
+
     private Rigidbody2D rb;
     private float xInput;
     private bool isGrounded;
@@ -15,41 +16,50 @@ public class PlayerMovement : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
     }
+
     private void Update()
     {
         handleInput();
         handleMovement();
+
         isGrounded = Physics2D.OverlapCircle(
-        groundCheck.position,
-        groundCheckRadius,
-        groundLayer
+            groundCheck.position,
+            groundCheckRadius,
+            groundLayer
         );
     }
-    
-    
-    
+
     private void handleInput()
     {
-        xInput = Input.GetAxisRaw("Horizontal");
-        if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow)) && isGrounded)
-        {
-            Jump();
-        }
+    xInput = Input.GetAxisRaw("Horizontal");
+
+    if ((Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow)) && isGrounded)
+    {
+        Jump();
     }
+
+    if ((Input.GetKeyUp(KeyCode.Space) || Input.GetKeyUp(KeyCode.UpArrow)) && rb.linearVelocityY > 0)
+    {
+        rb.linearVelocity = new Vector2(
+            rb.linearVelocity.x,
+            rb.linearVelocity.y * 0.5f
+        );
+    }
+    }
+
     private void handleMovement()
     {
-        rb.linearVelocity = new Vector2(xInput * moveSpeed, rb.linearVelocityY);
+        rb.linearVelocity = new Vector2(
+            xInput * moveSpeed,
+            rb.linearVelocityY
+        );
     }
+
     private void Jump()
     {
-        rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-    }
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        isGrounded = true;
-    }
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        isGrounded = false;
+        rb.linearVelocity = new Vector2(
+            rb.linearVelocity.x,
+            jumpForce
+        );
     }
 }
