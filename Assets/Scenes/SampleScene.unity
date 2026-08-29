@@ -1444,7 +1444,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   wallSlideSpeed: 2.5
-  wallJumpForce: 13
+  wallJumpForce: 14
   wallJumpHorizontalForce: 10
   dashSpeed: 15
   dashDuration: 0.15
