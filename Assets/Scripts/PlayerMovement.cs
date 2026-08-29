@@ -35,6 +35,13 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float dashDuration = 0.15f;
     [SerializeField] private float dashCooldown = 0.1f;
 
+    [SerializeField] private Transform attackHitbox;
+    [SerializeField] private float attackHitboxOffset = 0.8f;
+
+    private float attackTimeCounter;
+    private float attackCooldownCounter;
+    private bool isAttacking;
+
     private Rigidbody2D rb;
     private Collider2D playerCollider;
 
@@ -94,6 +101,14 @@ public class PlayerMovement : MonoBehaviour
         if (xInput != 0)
         {
             facingDirection = Mathf.Sign(xInput);
+        }
+        if (attackHitbox != null)
+        {
+            attackHitbox.localPosition = new Vector3(
+                facingDirection * attackHitboxOffset,
+                attackHitbox.localPosition.y,
+                attackHitbox.localPosition.z
+            );
         }
 
         if (Input.GetKeyDown(KeyCode.Space) ||
