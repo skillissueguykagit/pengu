@@ -7,6 +7,9 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private LayerMask groundLayer;
 
+    [Header("Combat")]
+    [SerializeField] private float attackRange = 1.2f;
+
     [Header("Movement")]
     [SerializeField] private float moveSpeed = 2f;
     [SerializeField] private float wallCheckDistance = 0.15f;
@@ -18,6 +21,7 @@ public class EnemyAI : MonoBehaviour
 
     private bool playerDetected;
     private float patrolDirection = 1f;
+    private float facingDirection = 1f;
 
     private void Awake()
     {
@@ -96,9 +100,26 @@ public class EnemyAI : MonoBehaviour
 
     private void ChasePlayer()
     {
+        float distance = Vector2.Distance(
+            transform.position,
+            player.position
+        );
+
         float direction = Mathf.Sign(
             player.position.x - transform.position.x
         );
+
+        facingDirection = direction;
+
+        if (distance <= attackRange)
+        {
+            rb.linearVelocity = new Vector2(
+                0f,
+                rb.linearVelocityY
+            );
+
+            return;
+        }
 
         patrolDirection = direction;
 
@@ -146,6 +167,8 @@ public class EnemyAI : MonoBehaviour
             patrolDirection *= -1f;
         }
 
+        facingDirection = patrolDirection;
+
         rb.linearVelocity = new Vector2(
             patrolDirection * moveSpeed,
             rb.linearVelocityY
@@ -159,6 +182,13 @@ public class EnemyAI : MonoBehaviour
         Gizmos.DrawWireSphere(
             transform.position,
             detectionRange
+        );
+
+        Gizmos.color = Color.red;
+
+        Gizmos.DrawWireSphere(
+            transform.position,
+            attackRange
         );
 
         if (player != null)
