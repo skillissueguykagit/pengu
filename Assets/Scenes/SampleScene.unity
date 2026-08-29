@@ -574,7 +574,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   moveSpeed: 4
-  jumpForce: 10
+  jumpForce: 13
+  fallMultiplier: 2.5
+  lowJumpMultiplier: 2
   groundCheck: {fileID: 307101778}
   groundCheckRadius: 0.05
   groundLayer:
