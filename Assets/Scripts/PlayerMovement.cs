@@ -14,10 +14,14 @@ public class PlayerMovement : MonoBehaviour
     private void Update()
     {
         xInput = Input.GetAxisRaw("Horizontal");
-        rb.linearVelocity = new Vector2(xInput * moveSpeed, rb.linearVelocityY);
+        handleMovement();
 
         if (Input.GetKeyDown(KeyCode.Space) || Input.GetKeyDown(KeyCode.UpArrow))
             Jump();
+    }
+private void handleMovement()
+    {
+        rb.linearVelocity = new Vector2(xInput * moveSpeed, rb.linearVelocityY);
     }
     private void Jump()
     {
