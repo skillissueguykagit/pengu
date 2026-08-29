@@ -3,16 +3,20 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     [Header("Movement")]
-    [SerializeField] private float moveSpeed = 4f;
+    [SerializeField] private float moveSpeed = 4.5f;
+    [SerializeField] private float groundAcceleration = 55f;
+    [SerializeField] private float groundDeceleration = 65f;
+    [SerializeField] private float airAcceleration = 35f;
+    [SerializeField] private float airDeceleration = 25f;
 
     [Header("Jump")]
-    [SerializeField] private float jumpForce = 6f;
-    [SerializeField] private float fallMultiplier = 2.5f;
-    [SerializeField] private float lowJumpMultiplier = 2f;
+    [SerializeField] private float jumpForce = 7f;
+    [SerializeField] private float fallMultiplier = 2.8f;
+    [SerializeField] private float lowJumpMultiplier = 2.2f;
 
     [Header("Jump Timing")]
     [SerializeField] private float coyoteTime = 0.1f;
-    [SerializeField] private float jumpBufferTime = 0.1f;
+    [SerializeField] private float jumpBufferTime = 0.12f;
 
     [Header("Collision Checks")]
     [SerializeField] private float groundCheckDistance = 0.1f;
@@ -23,28 +27,32 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Wall")]
     [SerializeField] private float wallSlideSpeed = 2f;
-    [SerializeField] private float wallJumpForce = 6f;
-    [SerializeField] private float wallJumpHorizontalForce = 5f;
-    [SerializeField] private float wallJumpLockTime = 0.15f;
+    [SerializeField] private float wallJumpForce = 7.5f;
+    [SerializeField] private float wallJumpHorizontalForce = 7f;
+
+    [Header("Dash")]
+    [SerializeField] private float dashSpeed = 15f;
+    [SerializeField] private float dashDuration = 0.15f;
+    [SerializeField] private float dashCooldown = 0.1f;
 
     private Rigidbody2D rb;
     private Collider2D playerCollider;
 
     private float xInput;
+    private float facingDirection = 1f;
 
     private bool isGrounded;
     private bool isTouchingWall;
     private bool isWallSliding;
+    private bool isDashing;
+    private bool hasDashed;
 
-    // -1 = wall on left
-    //  0 = no wall
-    //  1 = wall on right
     private int wallDirection;
 
     private float coyoteTimeCounter;
     private float jumpBufferCounter;
-
-    private float wallJumpLockCounter;
+    private float dashTimeCounter;
+    private float dashCooldownCounter;
 
     private void Awake()
     {
@@ -59,15 +67,22 @@ public class PlayerMovement : MonoBehaviour
         HandleCoyoteTime();
         HandleJump();
         HandleWallSlide();
+        HandleDash();
 
-        if (wallJumpLockCounter > 0)
+        if (dashCooldownCounter > 0)
         {
-            wallJumpLockCounter -= Time.deltaTime;
+            dashCooldownCounter -= Time.deltaTime;
         }
     }
 
     private void FixedUpdate()
     {
+        if (isDashing)
+        {
+            HandleDashMovement();
+            return;
+        }
+
         HandleMovement();
         HandleGravity();
     }
@@ -76,7 +91,11 @@ public class PlayerMovement : MonoBehaviour
     {
         xInput = Input.GetAxisRaw("Horizontal");
 
-        // Jump buffer
+        if (xInput != 0)
+        {
+            facingDirection = Mathf.Sign(xInput);
+        }
+
         if (Input.GetKeyDown(KeyCode.Space) ||
             Input.GetKeyDown(KeyCode.UpArrow))
         {
@@ -87,15 +106,19 @@ public class PlayerMovement : MonoBehaviour
             jumpBufferCounter -= Time.deltaTime;
         }
 
-        // Short jump
         if ((Input.GetKeyUp(KeyCode.Space) ||
              Input.GetKeyUp(KeyCode.UpArrow)) &&
-             rb.linearVelocityY > 0)
+            rb.linearVelocityY > 0)
         {
             rb.linearVelocity = new Vector2(
                 rb.linearVelocity.x,
                 rb.linearVelocity.y * 0.5f
             );
+        }
+
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            TryDash();
         }
     }
 
@@ -116,7 +139,6 @@ public class PlayerMovement : MonoBehaviour
         if (jumpBufferCounter <= 0)
             return;
 
-        // Normal jump
         if (coyoteTimeCounter > 0)
         {
             Jump();
@@ -127,10 +149,7 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
 
-        // Wall jump
-        if (isTouchingWall &&
-            !isGrounded &&
-            wallJumpLockCounter <= 0)
+        if (isTouchingWall && !isGrounded)
         {
             WallJump();
 
@@ -140,11 +159,31 @@ public class PlayerMovement : MonoBehaviour
 
     private void HandleMovement()
     {
-        if (wallJumpLockCounter > 0)
-            return;
+        float targetSpeed = xInput * moveSpeed;
+
+        float acceleration;
+
+        if (Mathf.Abs(xInput) > 0.01f)
+        {
+            acceleration = isGrounded
+                ? groundAcceleration
+                : airAcceleration;
+        }
+        else
+        {
+            acceleration = isGrounded
+                ? groundDeceleration
+                : airDeceleration;
+        }
+
+        float newSpeed = Mathf.MoveTowards(
+            rb.linearVelocity.x,
+            targetSpeed,
+            acceleration * Time.fixedDeltaTime
+        );
 
         rb.linearVelocity = new Vector2(
-            xInput * moveSpeed,
+            newSpeed,
             rb.linearVelocityY
         );
     }
@@ -177,19 +216,19 @@ public class PlayerMovement : MonoBehaviour
 
     private void WallJump()
     {
-        // Direction away from the wall
         float jumpDirection = -wallDirection;
 
         rb.linearVelocity = new Vector2(
             jumpDirection * wallJumpHorizontalForce,
             wallJumpForce
         );
-
-        wallJumpLockCounter = wallJumpLockTime;
     }
 
     private void HandleWallSlide()
     {
+        if (isDashing)
+            return;
+
         if (isTouchingWall &&
             !isGrounded &&
             rb.linearVelocityY < 0)
@@ -210,11 +249,73 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private void TryDash()
+    {
+        if (isDashing)
+            return;
+
+        if (hasDashed)
+            return;
+
+        if (dashCooldownCounter > 0)
+            return;
+
+        StartDash();
+    }
+
+    private void StartDash()
+    {
+        isDashing = true;
+        hasDashed = true;
+
+        dashTimeCounter = dashDuration;
+        dashCooldownCounter = dashCooldown;
+
+        float dashDirection = xInput != 0
+            ? Mathf.Sign(xInput)
+            : facingDirection;
+
+        rb.linearVelocity = new Vector2(
+            dashDirection * dashSpeed,
+            0f
+        );
+    }
+
+    private void HandleDash()
+    {
+        if (!isDashing)
+            return;
+
+        dashTimeCounter -= Time.deltaTime;
+
+        if (dashTimeCounter <= 0)
+        {
+            EndDash();
+        }
+    }
+
+    private void HandleDashMovement()
+    {
+        rb.linearVelocity = new Vector2(
+            rb.linearVelocity.x,
+            0f
+        );
+    }
+
+    private void EndDash()
+    {
+        isDashing = false;
+
+        rb.linearVelocity = new Vector2(
+            rb.linearVelocity.x,
+            0f
+        );
+    }
+
     private void CheckCollisions()
     {
         Bounds bounds = playerCollider.bounds;
 
-        // Ground check
         Vector2 groundOrigin = new Vector2(
             bounds.center.x,
             bounds.min.y
@@ -236,7 +337,11 @@ public class PlayerMovement : MonoBehaviour
 
         isGrounded = groundHit.collider != null;
 
-        // Right wall check
+        if (isGrounded)
+        {
+            hasDashed = false;
+        }
+
         Vector2 rightWallOrigin = new Vector2(
             bounds.max.x,
             bounds.center.y
@@ -256,7 +361,6 @@ public class PlayerMovement : MonoBehaviour
             groundLayer
         );
 
-        // Left wall check
         Vector2 leftWallOrigin = new Vector2(
             bounds.min.x,
             bounds.center.y
@@ -271,7 +375,6 @@ public class PlayerMovement : MonoBehaviour
             groundLayer
         );
 
-        // Wall result
         if (rightWallHit.collider != null)
         {
             isTouchingWall = true;
@@ -301,7 +404,6 @@ public class PlayerMovement : MonoBehaviour
 
         Bounds bounds = playerCollider.bounds;
 
-        // Ground check
         Gizmos.color = Color.green;
 
         Vector3 groundOrigin = new Vector3(
@@ -321,7 +423,6 @@ public class PlayerMovement : MonoBehaviour
             groundSize
         );
 
-        // Wall checks
         Gizmos.color = Color.blue;
 
         Vector3 rightWallOrigin = new Vector3(
