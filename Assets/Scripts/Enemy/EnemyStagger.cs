@@ -11,6 +11,16 @@ public class EnemyStagger : MonoBehaviour
     private EnemyAI enemyAI;
     private EnemyAttack enemyAttack;
     private Rigidbody2D rb;
+    private void FixedUpdate()
+    {
+        if (!IsStaggered())
+            return;
+
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+        }
+    }
 
     private void Awake()
     {
