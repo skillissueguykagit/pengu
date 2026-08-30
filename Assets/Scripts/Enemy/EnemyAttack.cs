@@ -14,6 +14,18 @@ public class EnemyAttack : MonoBehaviour
         enemyStagger = GetComponent<EnemyStagger>();
     }
 
+   
+    public void CancelAttack()
+    {
+        isAttacking = false;
+        attackTimer = 0f;
+
+        if (attackHitbox != null)
+        {
+            attackHitbox.SetActive(false);
+        }
+    }
+
     private void Update()
     {
         if (cooldownCounter > 0)

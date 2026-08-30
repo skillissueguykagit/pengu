@@ -1446,6 +1446,7 @@ GameObject:
   - component: {fileID: 1084504611}
   - component: {fileID: 1084504613}
   - component: {fileID: 1084504614}
+  - component: {fileID: 1084504615}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -1669,6 +1670,20 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Health
   maxHealth: 200
+--- !u!114 &1084504615
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1084504607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f0117f535068842faa5fa5f9d374bbd6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerParry
+  parryDuration: 0.15
+  spriteRenderer: {fileID: 1084504608}
 --- !u!1 &1238463336
 GameObject:
   m_ObjectHideFlags: 0

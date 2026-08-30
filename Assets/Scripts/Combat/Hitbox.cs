@@ -45,6 +45,45 @@ public class Hitbox : MonoBehaviour
         if (hitTargets.Contains(hurtbox))
             return;
 
+        PlayerParry parry = hurtbox.GetComponent<PlayerParry>();
+
+        if (parry == null)
+        {
+            parry = hurtbox.GetComponentInParent<PlayerParry>();
+        }
+
+        if (parry != null && parry.IsParrying())
+        {
+            EnemyStagger enemyStagger = null;
+
+            if (owner != null)
+            {
+                enemyStagger = owner.GetComponent<EnemyStagger>();
+            }
+
+            if (enemyStagger != null)
+            {
+                enemyStagger.Stagger();
+            }
+
+            EnemyAttack enemyAttack = null;
+
+            if (owner != null)
+            {
+                enemyAttack = owner.GetComponent<EnemyAttack>();
+            }
+
+            if (enemyAttack != null)
+            {
+                enemyAttack.CancelAttack();
+            }
+
+            parry.EndParry();
+            hitTargets.Add(hurtbox);
+
+            return;
+        }
+
         hitTargets.Add(hurtbox);
 
         hurtbox.TakeDamage(damage);
