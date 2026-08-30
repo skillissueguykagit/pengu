@@ -5,10 +5,14 @@ public class EnemyAttack : MonoBehaviour
     [SerializeField] private GameObject attackHitbox;
     [SerializeField] private float attackCooldown = 1f;
     [SerializeField] private float attackDuration = 0.2f;
-
+    private EnemyStagger enemyStagger;
     private float cooldownCounter;
     private bool isAttacking;
     private float attackTimer;
+    private void Awake()
+    {
+        enemyStagger = GetComponent<EnemyStagger>();
+    }
 
     private void Update()
     {
@@ -30,7 +34,9 @@ public class EnemyAttack : MonoBehaviour
 
     public bool CanAttack()
     {
-        return cooldownCounter <= 0 && !isAttacking;
+        return cooldownCounter <= 0 &&
+            !isAttacking &&
+            (enemyStagger == null || !enemyStagger.IsStaggered());
     }
 
     public void Attack()

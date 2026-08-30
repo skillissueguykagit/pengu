@@ -26,12 +26,14 @@ public class EnemyAI : MonoBehaviour
     private float patrolDirection = 1f;
     private float facingDirection = 1f;
     private EnemyAttack enemyAttack;
+    private EnemyStagger enemyStagger;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         enemyCollider = GetComponent<Collider2D>();
         enemyAttack = GetComponent<EnemyAttack>();
+        enemyStagger = GetComponent<EnemyStagger>();
 
         if (attackHitbox != null)
         {
@@ -56,6 +58,15 @@ public class EnemyAI : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (enemyStagger != null && enemyStagger.IsStaggered())
+        {
+            rb.linearVelocity = new Vector2(
+                0f,
+                rb.linearVelocityY
+            );
+
+            return;
+        }
         if (playerDetected)
         {
             ChasePlayer();
