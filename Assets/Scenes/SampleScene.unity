@@ -1521,7 +1521,7 @@ Transform:
   m_GameObject: {fileID: 1084504607}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 35.86, y: -11.38, z: 0}
+  m_LocalPosition: {x: 26.62, y: -11.06, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3103,7 +3103,7 @@ Transform:
   m_GameObject: {fileID: 1904987594}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 43.88, y: -11.23, z: 0}
+  m_LocalPosition: {x: 47.62, y: -11.23, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -3210,8 +3210,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyAttack
   attackHitbox: {fileID: 1553875432}
-  attackDuration: 0.2
   attackCooldown: 1
+  attackDuration: 0.2
 --- !u!114 &1904987601
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3235,6 +3235,7 @@ MonoBehaviour:
   moveSpeed: 2
   wallCheckDistance: 0.1
   groundCheckDistance: 0.5
+  attackHitbox: {fileID: 1553875433}
 --- !u!1 &1944052213
 GameObject:
   m_ObjectHideFlags: 0

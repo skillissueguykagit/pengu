@@ -14,6 +14,9 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] private float moveSpeed = 2f;
     [SerializeField] private float wallCheckDistance = 0.15f;
     [SerializeField] private float groundCheckDistance = 0.5f;
+    [SerializeField] private Transform attackHitbox;
+
+    private Vector3 attackHitboxStartPosition;
 
     private Transform player;
     private Rigidbody2D rb;
@@ -22,11 +25,18 @@ public class EnemyAI : MonoBehaviour
     private bool playerDetected;
     private float patrolDirection = 1f;
     private float facingDirection = 1f;
+    private EnemyAttack enemyAttack;
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
         enemyCollider = GetComponent<Collider2D>();
+        enemyAttack = GetComponent<EnemyAttack>();
+
+        if (attackHitbox != null)
+        {
+            attackHitboxStartPosition = attackHitbox.localPosition;
+        }
     }
 
     private void Start()
@@ -54,6 +64,18 @@ public class EnemyAI : MonoBehaviour
         {
             Patrol();
         }
+    }
+
+    private void UpdateAttackHitboxDirection()
+    {
+        if (attackHitbox == null)
+            return;
+
+        Vector3 position = attackHitboxStartPosition;
+
+        position.x = Mathf.Abs(position.x) * facingDirection;
+
+        attackHitbox.localPosition = position;
     }
 
     private void DetectPlayer()
@@ -110,6 +132,9 @@ public class EnemyAI : MonoBehaviour
         );
 
         facingDirection = direction;
+        patrolDirection = direction;
+
+        UpdateAttackHitboxDirection();
 
         if (distance <= attackRange)
         {
@@ -118,10 +143,14 @@ public class EnemyAI : MonoBehaviour
                 rb.linearVelocityY
             );
 
+            if (enemyAttack != null &&
+                enemyAttack.CanAttack())
+            {
+                enemyAttack.Attack();
+            }
+
             return;
         }
-
-        patrolDirection = direction;
 
         rb.linearVelocity = new Vector2(
             direction * moveSpeed,
@@ -168,6 +197,8 @@ public class EnemyAI : MonoBehaviour
         }
 
         facingDirection = patrolDirection;
+
+        UpdateAttackHitboxDirection();
 
         rb.linearVelocity = new Vector2(
             patrolDirection * moveSpeed,

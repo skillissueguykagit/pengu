@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.InputSystem.LowLevel;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -29,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private float wallSlideSpeed = 2f;
     [SerializeField] private float wallJumpForce = 7.5f;
     [SerializeField] private float wallJumpHorizontalForce = 7f;
+
 
     [Header("Dash")]
     [SerializeField] private float dashSpeed = 15f;
@@ -244,9 +246,14 @@ public class PlayerMovement : MonoBehaviour
         if (isDashing)
             return;
 
+        bool holdingTowardWall =
+            xInput != 0 &&
+            Mathf.Sign(xInput) == wallDirection;
+
         if (isTouchingWall &&
             !isGrounded &&
-            rb.linearVelocityY < 0)
+            rb.linearVelocityY < 0 &&
+            holdingTowardWall)
         {
             isWallSliding = true;
 
