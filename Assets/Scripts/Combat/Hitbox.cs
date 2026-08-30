@@ -75,6 +75,11 @@ public class Hitbox : MonoBehaviour
 
             parry.EndParry();
 
+            if (HitStop.Instance != null)
+            {
+                HitStop.Instance.Stop(0.05f);
+            }
+
             hitTargets.Add(hurtbox);
 
             return;
