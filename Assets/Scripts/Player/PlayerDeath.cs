@@ -14,6 +14,8 @@ public class PlayerDeath : MonoBehaviour
     private Vector3 respawnPosition;
 
     private bool isDead;
+    [SerializeField] private EnemyReset[] enemies;
+    
 
     private void Awake()
     {
@@ -23,6 +25,18 @@ public class PlayerDeath : MonoBehaviour
         playerDamage = GetComponent<PlayerDamage>();
 
         respawnPosition = transform.position;
+    }
+    private void ResetEnemies()
+    {
+        Debug.Log("RESETTING ENEMIES");
+
+        foreach (EnemyReset enemy in enemies)
+        {
+            if (enemy != null)
+            {
+                enemy.ResetEnemy();
+            }
+        }
     }
 
     private void Update()
@@ -73,6 +87,7 @@ public class PlayerDeath : MonoBehaviour
         {
             health.ResetHealth();
         }
+        ResetEnemies();
 
         if (rb != null)
         {
@@ -103,4 +118,5 @@ public class PlayerDeath : MonoBehaviour
     {
         respawnPosition = position;
     }
+    
 }
