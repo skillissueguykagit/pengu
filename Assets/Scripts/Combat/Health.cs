@@ -15,12 +15,30 @@ public class Health : MonoBehaviour
     {
         currentHealth -= damage;
 
-        Debug.Log(gameObject.name + " took " + damage + " damage. Health: " + currentHealth);
+        Debug.Log(
+            gameObject.name +
+            " took " +
+            damage +
+            " damage. Health: " +
+            currentHealth
+        );
 
         if (currentHealth <= 0)
         {
+            currentHealth = 0;
+
             Die();
         }
+    }
+
+    public int GetCurrentHealth()
+    {
+        return currentHealth;
+    }
+
+    public int GetMaxHealth()
+    {
+        return maxHealth;
     }
 
     private void Die()

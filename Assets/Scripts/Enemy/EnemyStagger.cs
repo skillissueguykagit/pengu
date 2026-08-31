@@ -11,16 +11,6 @@ public class EnemyStagger : MonoBehaviour
     private EnemyAI enemyAI;
     private EnemyAttack enemyAttack;
     private Rigidbody2D rb;
-    private void FixedUpdate()
-    {
-        if (!IsStaggered())
-            return;
-
-        if (rb != null)
-        {
-            rb.linearVelocity = Vector2.zero;
-        }
-    }
 
     private void Awake()
     {
@@ -32,9 +22,6 @@ public class EnemyStagger : MonoBehaviour
 
     private void Update()
     {
-        if (enemyStates == null)
-            return;
-
         if (!IsStaggered())
             return;
 
@@ -42,14 +29,19 @@ public class EnemyStagger : MonoBehaviour
 
         if (staggerTimer <= 0)
         {
-            enemyStates.SetState(
-                EnemyStates.EnemyState.Alive
-            );
+            SetState(EnemyStates.EnemyState.Alive);
+        }
+    }
 
-            if (enemyAI != null)
-            {
-                enemyAI.enabled = true;
-            }
+    private void FixedUpdate()
+    {
+        if (!IsStaggered())
+            return;
+
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
         }
     }
 
@@ -86,6 +78,9 @@ public class EnemyStagger : MonoBehaviour
         if (rb != null)
         {
             rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+
+            rb.bodyType = RigidbodyType2D.Kinematic;
         }
     }
 
@@ -107,6 +102,13 @@ public class EnemyStagger : MonoBehaviour
 
         if (newState == EnemyStates.EnemyState.Alive)
         {
+            if (rb != null)
+            {
+                rb.bodyType = RigidbodyType2D.Dynamic;
+                rb.linearVelocity = Vector2.zero;
+                rb.angularVelocity = 0f;
+            }
+
             if (enemyAI != null)
             {
                 enemyAI.enabled = true;

@@ -3104,6 +3104,7 @@ GameObject:
   - component: {fileID: 1904987601}
   - component: {fileID: 1904987602}
   - component: {fileID: 1904987603}
+  - component: {fileID: 1904987604}
   m_Layer: 0
   m_Name: Enemy
   m_TagString: Untagged
@@ -3211,9 +3212,9 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
-  m_CollisionDetection: 0
+  m_CollisionDetection: 1
   m_Constraints: 4
 --- !u!61 &1904987598
 BoxCollider2D:
@@ -3308,7 +3309,7 @@ MonoBehaviour:
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
-  attackRange: 2
+  attackRange: 1.5
   moveSpeed: 2
   wallCheckDistance: 0.1
   groundCheckDistance: 0.5
@@ -3325,7 +3326,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: de4c5e83794a24848ba71ad8956c3373, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStagger
-  staggerDuration: 0.4
+  staggerDuration: 1
 --- !u!114 &1904987603
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3339,6 +3340,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyStates
   currentState: 0
+--- !u!114 &1904987604
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1904987594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6d6ea8ee132fd425bbd631b0928639a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyFinish
+  executeHealthThreshold: 25
 --- !u!1 &1944052213
 GameObject:
   m_ObjectHideFlags: 0
