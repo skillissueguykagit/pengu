@@ -13,6 +13,9 @@ public class Health : MonoBehaviour
 
     public void TakeDamage(int damage)
     {
+        if (currentHealth <= 0)
+            return;
+
         currentHealth -= damage;
 
         Debug.Log(
@@ -39,6 +42,16 @@ public class Health : MonoBehaviour
     public int GetMaxHealth()
     {
         return maxHealth;
+    }
+
+    public bool IsDead()
+    {
+        return currentHealth <= 0;
+    }
+
+    public void ResetHealth()
+    {
+        currentHealth = maxHealth;
     }
 
     private void Die()

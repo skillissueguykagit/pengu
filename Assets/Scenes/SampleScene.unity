@@ -1492,6 +1492,7 @@ GameObject:
   - component: {fileID: 1084504614}
   - component: {fileID: 1084504615}
   - component: {fileID: 1084504616}
+  - component: {fileID: 1084504617}
   m_Layer: 6
   m_Name: Player
   m_TagString: Player
@@ -1743,6 +1744,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerDamage
   knockbackForce: 10
   invulnerabilityDuration: 0.8
+--- !u!114 &1084504617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1084504607}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 63eaec7bb41e14958875c11bb661ffab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDeath
+  respawnDelay: 1
 --- !u!1 &1238463336
 GameObject:
   m_ObjectHideFlags: 0
