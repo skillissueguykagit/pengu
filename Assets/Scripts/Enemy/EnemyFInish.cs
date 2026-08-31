@@ -3,84 +3,75 @@ using UnityEngine;
 public class EnemyFinish : MonoBehaviour
 {
     [Header("Finish")]
-    [SerializeField] private float executeHealthThreshold = 25f;
+    [SerializeField] private int executeHealthThreshold = 25;
 
+    [Header("Input")]
+    [SerializeField] private KeyCode executeKey = KeyCode.E;
+    [SerializeField] private KeyCode spareKey = KeyCode.Q;
+
+    private Health health;
     private EnemyStates enemyStates;
     private EnemyStagger enemyStagger;
-    private Health health;
     private EnemyAI enemyAI;
     private EnemyAttack enemyAttack;
+    private Rigidbody2D rb;
+
+    private bool canFinish;
 
     private void Awake()
     {
+        health = GetComponent<Health>();
         enemyStates = GetComponent<EnemyStates>();
         enemyStagger = GetComponent<EnemyStagger>();
-        health = GetComponent<Health>();
         enemyAI = GetComponent<EnemyAI>();
         enemyAttack = GetComponent<EnemyAttack>();
+        rb = GetComponent<Rigidbody2D>();
     }
 
     private void Update()
-    {
-        if (!CanFinish())
-            return;
-
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            Execute();
-        }
-
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            Spare();
-        }
-    }
-
-    private bool CanFinish()
     {
         if (enemyStates == null ||
             enemyStagger == null ||
             health == null)
         {
-            return false;
+            return;
         }
 
+        // Only allow finishing while staggered
         if (!enemyStagger.IsStaggered())
-            return false;
-
-        if (enemyStates.GetState() !=
-            EnemyStates.EnemyState.Staggered)
         {
-            return false;
+            canFinish = false;
+            return;
         }
 
-        return health.GetCurrentHealth() <= executeHealthThreshold;
+        // Enemy must be at or below the health threshold
+        if (health.GetCurrentHealth() > executeHealthThreshold)
+        {
+            canFinish = false;
+            return;
+        }
+
+        canFinish = true;
+
+        if (Input.GetKeyDown(executeKey))
+        {
+            Execute();
+        }
+        else if (Input.GetKeyDown(spareKey))
+        {
+            Spare();
+        }
     }
 
     private void Execute()
     {
+        if (!canFinish)
+            return;
+
         enemyStates.SetState(
             EnemyStates.EnemyState.Dead
         );
 
-        DisableEnemy();
-
-        Debug.Log("ENEMY EXECUTED");
-    }
-
-    private void Spare()
-    {
-        enemyStates.SetState(
-            EnemyStates.EnemyState.Spared
-        );
-
-        DisableEnemy();
-
-        Debug.Log("ENEMY SPARED");
-    }
-
-    private void DisableEnemy()
-    {
         if (enemyAI != null)
         {
             enemyAI.enabled = false;
@@ -89,9 +80,22 @@ public class EnemyFinish : MonoBehaviour
         if (enemyAttack != null)
         {
             enemyAttack.CancelAttack();
+            enemyAttack.enabled = false;
         }
 
-        Rigidbody2D rb = GetComponent<Rigidbody2D>();
+        if (enemyStagger != null)
+        {
+            enemyStagger.enabled = false;
+        }
+
+        // Disable all enemy colliders
+        Collider2D[] colliders =
+            GetComponentsInChildren<Collider2D>();
+
+        foreach (Collider2D collider in colliders)
+        {
+            collider.enabled = false;
+        }
 
         if (rb != null)
         {
@@ -99,5 +103,53 @@ public class EnemyFinish : MonoBehaviour
             rb.angularVelocity = 0f;
             rb.bodyType = RigidbodyType2D.Kinematic;
         }
+
+        canFinish = false;
+
+        Debug.Log("ENEMY EXECUTED");
+    }
+
+    private void Spare()
+    {
+        if (!canFinish)
+            return;
+
+        enemyStates.SetState(
+            EnemyStates.EnemyState.Spared
+        );
+
+        if (enemyAI != null)
+        {
+            enemyAI.enabled = false;
+        }
+
+        if (enemyAttack != null)
+        {
+            enemyAttack.CancelAttack();
+            enemyAttack.enabled = false;
+        }
+
+        if (enemyStagger != null)
+        {
+            enemyStagger.enabled = false;
+        }
+
+        // Keep the enemy physically present
+        // but stop it from moving.
+        if (rb != null)
+        {
+            rb.linearVelocity = Vector2.zero;
+            rb.angularVelocity = 0f;
+            rb.bodyType = RigidbodyType2D.Kinematic;
+        }
+
+        canFinish = false;
+
+        Debug.Log("ENEMY SPARED");
+    }
+
+    public bool CanFinish()
+    {
+        return canFinish;
     }
 }
