@@ -28,6 +28,10 @@ public class PlayerAnimation : MonoBehaviour
         bool isGrounded = playerMovement.IsGrounded();
         animator.SetBool("IsJumping", !isGrounded);
 
+        // Dashing state
+        bool isDashing = playerMovement.IsDashing();
+        animator.SetBool("IsDashing", isDashing);
+
         // Wall sliding
         bool isWallSliding = playerMovement.IsWallSliding();
         animator.SetBool("IsWallSliding", isWallSliding);
