@@ -475,4 +475,12 @@ public class PlayerMovement : MonoBehaviour
             wallSize
         );
     }
+    public bool IsGrounded()
+    {
+        return isGrounded;
+    }
+    public bool IsDashing()
+    {
+        return isDashing;
+    }
 }
