@@ -125,12 +125,12 @@ TextureImporter:
       name: punch_1_0
       rect:
         serializedVersion: 2
-        x: 55
-        y: 15
-        width: 23
-        height: 36
+        x: 56
+        y: 16
+        width: 32
+        height: 34
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -147,12 +147,12 @@ TextureImporter:
       name: punch_1_1
       rect:
         serializedVersion: 2
-        x: 183
-        y: 15
-        width: 34
-        height: 36
+        x: 184
+        y: 16
+        width: 32
+        height: 34
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -169,12 +169,12 @@ TextureImporter:
       name: punch_1_2
       rect:
         serializedVersion: 2
-        x: 311
-        y: 15
-        width: 34
-        height: 35
+        x: 312
+        y: 16
+        width: 32
+        height: 34
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -191,12 +191,12 @@ TextureImporter:
       name: punch_1_3
       rect:
         serializedVersion: 2
-        x: 439
-        y: 15
-        width: 28
-        height: 35
+        x: 440
+        y: 16
+        width: 32
+        height: 34
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -213,7 +213,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: b5b0db9d725b74d88bbf5735ccc1188b
     internalID: 0
     vertices: []
     indices: 
@@ -221,7 +221,9 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     spriteCustomMetadata:
-      entries: []
+      entries:
+      - key: SpriteEditor.SliceSettings
+        value: '{"sliceOnImport":false,"gridCellCount":{"x":1.0,"y":1.0},"gridSpriteSize":{"x":32.0,"y":34.0},"gridSpriteOffset":{"x":24.0,"y":30.0},"gridSpritePadding":{"x":0.0,"y":0.0},"pivot":{"x":0.5,"y":0.5},"pivotPixels":{"x":0.0,"y":0.0},"autoSlicingMethod":0,"spriteAlignment":0,"pivotUnitMode":0,"slicingType":1,"keepEmptyRects":false,"isAlternate":false}'
     nameFileIdTable:
       punch_1_0: -4702270134253695734
       punch_1_1: -1494447230474592409
