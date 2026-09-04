@@ -28,17 +28,29 @@ public class PlayerAnimation : MonoBehaviour
         bool isGrounded = playerMovement.IsGrounded();
         animator.SetBool("IsJumping", !isGrounded);
 
+        // Wall sliding
+        bool isWallSliding = playerMovement.IsWallSliding();
+        animator.SetBool("IsWallSliding", isWallSliding);
+
         // Vertical velocity
         animator.SetFloat("VerticalVelocity", verticalSpeed);
 
-        // Face movement direction
-        if (horizontalSpeed > 0.1f)
+        // Face direction
+        if (isWallSliding)
         {
-            spriteRenderer.flipX = false;
+            int wallDirection = playerMovement.GetWallDirection();
+            spriteRenderer.flipX = wallDirection > 0;
         }
-        else if (horizontalSpeed < -0.1f)
+        else
         {
-            spriteRenderer.flipX = true;
+            if (horizontalSpeed > 0.1f)
+            {
+                spriteRenderer.flipX = false;
+            }
+            else if (horizontalSpeed < -0.1f)
+            {
+                spriteRenderer.flipX = true;
+            }
         }
     }
 }

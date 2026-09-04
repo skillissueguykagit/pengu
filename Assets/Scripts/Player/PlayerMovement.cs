@@ -413,6 +413,7 @@ public class PlayerMovement : MonoBehaviour
             wallDirection = 0;
         }
     }
+    
 
     private void OnDrawGizmosSelected()
     {
@@ -482,5 +483,13 @@ public class PlayerMovement : MonoBehaviour
     public bool IsDashing()
     {
         return isDashing;
+    }
+    public bool IsWallSliding()
+    {
+        return isWallSliding;
+    }
+    public int GetWallDirection()
+    {
+        return wallDirection;
     }
 }
